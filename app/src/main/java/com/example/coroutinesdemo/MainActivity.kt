@@ -1,5 +1,6 @@
 package com.example.coroutinesdemo
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -30,6 +31,11 @@ class MainActivity : AppCompatActivity() {
                 makeApiRequestWithTimeout()
             }
 
+        }
+
+        button2.setOnClickListener {
+            val intent = Intent(this, JobsActivity::class.java)
+            startActivity(intent)
         }
     }
 
