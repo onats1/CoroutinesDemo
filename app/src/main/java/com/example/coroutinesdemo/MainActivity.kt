@@ -46,7 +46,7 @@ class MainActivity : AppCompatActivity() {
 
         val startTime = System.currentTimeMillis()
 
-        val job = CoroutineScope(IO).launch{
+        val job = CoroutineScope(IO).launch {
             val job1 = launch {
                 val time = measureTimeMillis {
                     println("Result 1 retrieved.")
@@ -74,7 +74,7 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private suspend fun requestWithAsyncAwait(){
+    private suspend fun requestWithAsyncAwait() {
 
         withContext(IO) {
             val time = measureTimeMillis {
@@ -94,23 +94,28 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
-    private suspend fun requestSequentialAsyncAndAwait(){
+    private suspend fun requestSequentialAsyncAndAwait() {
 
-        withContext(IO){
+        withContext(IO) {
 
-            val result1 = async {
-                getResult1()
-            }.await()
+            val timeElapsed = measureTimeMillis {
+                val result1 = async {
+                    getResult1()
+                }.await()
 
-            val result2 = async {
-                getAsyncResult2(result1)
-            }.await()
+                val result2 = async {
+                    getAsyncResult2(result1)
+                }.await()
 
-            println("Final Result: $result2")
+                println("Final Result: $result2")
+            }
+
+            println("Time elapsed: $timeElapsed")
         }
+
     }
 
-    private suspend fun makeApiRequest(){
+    private suspend fun makeApiRequest() {
         val value = getResult1()
 
         setTextOnMainThread(value)
@@ -119,22 +124,25 @@ class MainActivity : AppCompatActivity() {
         setTextOnMainThread(value2)
     }
 
-    private suspend fun makeApiRequestWithTimeout(){
-        val job = withTimeoutOrNull(REQUEST_TIMEOUT){
+    private suspend fun makeApiRequestWithTimeout() {
+        val job = withTimeoutOrNull(REQUEST_TIMEOUT) {
 
-          //  val result1 = getResult1()
+            //  val result1 = getResult1()
             setTextOnMainThread(getResult1())
-       //     val result2 = getResult2()
+            //     val result2 = getResult2()
             setTextOnMainThread(getResult2())
 
         }
 
-        if(job == null){
-            showLog("makeApiRequestWithTimeout", "Network request took longer than $REQUEST_TIMEOUT ms")
+        if (job == null) {
+            showLog(
+                "makeApiRequestWithTimeout",
+                "Network request took longer than $REQUEST_TIMEOUT ms"
+            )
         }
     }
 
-    private suspend fun getResult1(): String{
+    private suspend fun getResult1(): String {
         showLog(result1, "Result 1 works!")
         delay(1000)
         return result1
@@ -145,28 +153,28 @@ class MainActivity : AppCompatActivity() {
         return RESULT_2
     }
 
-    private suspend fun getAsyncResult2(result1holder: String): String{
+    private suspend fun getAsyncResult2(result1holder: String): String {
         delay(1700)
-        if (result1holder == result1){
+        if (result1holder == result1) {
             return "$result1holder is called before $RESULT_2"
         }
         return "Incorrect first result."
     }
 
-    private fun setText(text: String){
+    private fun setText(text: String) {
         val newText = textView.text.toString() + "\n $text"
         textView.text = newText
     }
 
-    private suspend fun setTextOnMainThread(text: String){
-        withContext(Main){
+    private suspend fun setTextOnMainThread(text: String) {
+        withContext(Main) {
             setText(text)
         }
     }
 
-    private fun showLog(methodName: String, description: String){
-        Log.d("${methodName }:", Thread.currentThread().name)
-        Log.d("${methodName }:", description)
+    private fun showLog(methodName: String, description: String) {
+        Log.d("${methodName}:", Thread.currentThread().name)
+        Log.d("${methodName}:", description)
     }
 
 }
