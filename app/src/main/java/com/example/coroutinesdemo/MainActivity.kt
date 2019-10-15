@@ -98,7 +98,11 @@ class MainActivity : AppCompatActivity() {
 
         withContext(IO) {
 
+            println("Current thread: ${Thread.currentThread().name}" )
+
             val timeElapsed = measureTimeMillis {
+
+                println("Current thread: ${Thread.currentThread().name}" )
                 val result1 = async {
                     getResult1()
                 }.await()
