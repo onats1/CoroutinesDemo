@@ -29,7 +29,9 @@ class MainActivity : AppCompatActivity() {
                 //makeApiRequestWithTimeout()
 
                 //fakeApiRequest()
-                requestWithAsyncAwait()
+                //requestWithAsyncAwait()
+
+                requestSequentialAsyncAndAwait()
             }
 
         }
@@ -92,6 +94,22 @@ class MainActivity : AppCompatActivity() {
         }
     }
 
+    private suspend fun requestSequentialAsyncAndAwait(){
+
+        withContext(IO){
+
+            val result1 = async {
+                getResult1()
+            }.await()
+
+            val result2 = async {
+                getAsyncResult2(result1)
+            }.await()
+
+            println("Final Result: $result2")
+        }
+    }
+
     private suspend fun makeApiRequest(){
         val value = getResult1()
 
@@ -127,6 +145,14 @@ class MainActivity : AppCompatActivity() {
         return RESULT_2
     }
 
+    private suspend fun getAsyncResult2(result1holder: String): String{
+        delay(1700)
+        if (result1holder == result1){
+            return "$result1holder is called before $RESULT_2"
+        }
+        return "Incorrect first result."
+    }
+
     private fun setText(text: String){
         val newText = textView.text.toString() + "\n $text"
         textView.text = newText
@@ -137,8 +163,6 @@ class MainActivity : AppCompatActivity() {
             setText(text)
         }
     }
-
-
 
     private fun showLog(methodName: String, description: String){
         Log.d("${methodName }:", Thread.currentThread().name)
